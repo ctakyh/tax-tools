@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>브랜드명 선택</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Apple SD Gothic Neo', -apple-system, sans-serif; background: #f5f5f7; padding: 16px; margin: 0; }
+  .container { max-width: 600px; margin: 0 auto; }
+  h2 { color: #1d1d1f; font-size: 20px; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 13px; margin-bottom: 8px; }
+  .counter { background: #0071e3; color: white; border-radius: 20px; padding: 8px 16px; font-size: 14px; font-weight: 600; display: inline-block; margin-bottom: 16px; }
+  .selected-box { background: white; border-radius: 14px; padding: 12px 16px; margin-bottom: 16px; min-height: 44px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); font-size: 14px; color: #1d1d1f; line-height: 1.8; }
+  .copy-btn { background: #34c759; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 20px; font-family: inherit; }
+  .section-title { font-size: 11px; font-weight: 700; color: #0071e3; letter-spacing: 1px; text-transform: uppercase; margin: 20px 0 8px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+  .item { background: white; border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); cursor: pointer; transition: all 0.15s; border: 2px solid transparent; }
+  .item.checked { border-color: #0071e3; background: #f0f6ff; }
+  .item input { display: none; }
+  .checkbox { width: 20px; height: 20px; border: 2px solid #ccc; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .item.checked .checkbox { background: #0071e3; border-color: #0071e3; }
+  .checkmark { color: white; font-size: 12px; font-weight: 700; display: none; }
+  .item.checked .checkmark { display: block; }
+  .name { font-size: 15px; font-weight: 600; color: #1d1d1f; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>브랜드명 선택</h2>
+  <p class="subtitle">9개 골라주세요!</p>
+  <div class="counter" id="counter">0 / 9 선택됨</div>
+
+  <div class="selected-box" id="selectedBox">선택한 이름이 여기 표시돼요</div>
+  <button class="copy-btn" onclick="copySelected()">📋 선택한 이름 복사</button>
+
+  <div class="section-title">📌 택스 계열</div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const names = {
+  "택스 계열": ["택스클릭","택스허브","택스파일럿","택스윙","택스젯","택스업","택스픽","택스에이스","택스프라임","택스링크","택스플로우","택스루트","택스케어","택스글로우","택스캡틴","택스노트","택스마크","택스스팟","택스위너","택스랩","택스코어","택스인사이트","택스포인트","택스밸류","택스앤톡","택스앤고","퀵택스","스마트택스","프리택스","트루택스","원택스","넥스트택스","플러스택스","택스마스터","택스히어로","택스브이","택스킹"],
+  "리턴 계열": ["리턴핏","리턴온","리턴업","리턴메이트","리턴클럽","리턴고","리턴플러스","리턴케어","리턴킹","이지리턴","굿리턴","리턴히어로"],
+  "세이브 계열": ["세이브온","세이브업","세이브핏","세이브인컴","세이브킹","세이브앤고"],
+  "인컴 계열": ["인컴핏","인컴온","인컴업","인컴케어","인컴클릭","인컴플로우","올인컴","인컴히어로","인컴마스터"],
+  "신고 계열": ["신고핏","신고메이트","신고온","신고업","신고플러스","신고포인트","신고히어로","이지신고","퀵신고","스마트신고"],
+  "세무 계열": ["세무픽","세무메이트","세무온","세무업","세무핏","세무인사이트","세무마스터","세무밸류","세무브이"],
+  "클리어/파인 계열": ["클리어택스","클리어인컴","클리어신고","파인택스","파인세무"],
+  "기타": ["픽앤고","핏앤고","케어앤고","올클리어","플로우온","핏온"]
+};
+
+const selected = new Set();
+
+function render() {
+  const container = document.querySelector('.container');
+  // 기존 섹션 제거
+  document.querySelectorAll('.section-title, .grid').forEach(el => el.remove());
+
+  Object.entries(names).forEach(([section, items]) => {
+    const title = document.createElement('div');
+    title.className = 'section-title';
+    title.textContent = '📌 ' + section;
+    container.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    items.forEach(name => {
+      const item = document.createElement('label');
+      item.className = 'item' + (selected.has(name) ? ' checked' : '');
+      item.innerHTML = `
+        <div class="checkbox"><span class="checkmark">✓</span></div>
+        <span class="name">${name}</span>
+      `;
+      item.onclick = () => toggle(name);
+      grid.appendChild(item);
+    });
+
+    container.appendChild(grid);
+  });
+}
+
+function toggle(name) {
+  if (selected.has(name)) {
+    selected.delete(name);
+  } else {
+    if (selected.size >= 9) {
+      alert('9개까지만 선택 가능해요!');
+      return;
+    }
+    selected.add(name);
+  }
+  updateUI();
+  render();
+}
+
+function updateUI() {
+  const count = selected.size;
+  document.getElementById('counter').textContent = `${count} / 9 선택됨`;
+  const box = document.getElementById('selectedBox');
+  if (count === 0) {
+    box.textContent = '선택한 이름이 여기 표시돼요';
+  } else {
+    box.textContent = [...selected].join(' / ');
+  }
+}
+
+function copySelected() {
+  if (selected.size === 0) { alert('먼저 이름을 선택해주세요!'); return; }
+  navigator.clipboard.writeText([...selected].join(', ')).then(() => {
+    alert('복사됐어요!');
+  });
+}
+
+render();
+</script>
+</body>
+</html>
