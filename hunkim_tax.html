@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>훈킴택스 — 종합소득세 신고대리</title>
+<meta name="description" content="훈킴택스 종합소득세 신고대리 서비스. 복잡한 종합소득세, 전문가에게 맡기세요.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --accent: #4f8ef7;
+    --accent2: #7c3aed;
+    --text: #f0f0f8;
+    --muted: #8888aa;
+    --border: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* 배경 그라디언트 */
+  .bg-glow {
+    position: fixed;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(79,142,247,0.12) 0%, transparent 70%);
+    top: -200px; left: -100px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-glow2 {
+    position: fixed;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%);
+    bottom: 0; right: -100px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* 네비 */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 20px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+  }
+  .logo {
+    font-size: 20px; font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .nav-cta {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+  }
+
+  /* 히어로 */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    z-index: 1;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(79,142,247,0.15);
+    border: 1px solid rgba(79,142,247,0.3);
+    color: var(--accent);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  h1 {
+    font-size: clamp(36px, 8vw, 72px);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: clamp(16px, 3vw, 20px);
+    color: var(--muted);
+    max-width: 500px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .cta-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    border: none;
+    padding: 16px 36px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 24px rgba(79,142,247,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(79,142,247,0.4); }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 16px 36px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.05); }
+
+  /* 수치 */
+  .stats {
+    display: flex;
+    gap: 48px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 80px;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 36px; font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* 특징 섹션 */
+  .features {
+    position: relative;
+    z-index: 1;
+    padding: 80px 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .section-label {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    text-align: center;
+    font-size: clamp(26px, 5vw, 40px);
+    font-weight: 900;
+    margin-bottom: 60px;
+    line-height: 1.3;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .feature-card:hover {
+    border-color: rgba(79,142,247,0.4);
+    transform: translateY(-4px);
+  }
+  .feature-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+  .feature-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .feature-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* 프로세스 */
+  .process {
+    position: relative;
+    z-index: 1;
+    padding: 80px 24px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .process-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .step {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 16px;
+    flex-shrink: 0;
+  }
+  .step-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .step-desc { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  /* CTA 섹션 */
+  .cta-section {
+    position: relative;
+    z-index: 1;
+    padding: 80px 24px;
+    text-align: center;
+  }
+  .cta-box {
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .cta-box h2 { font-size: 30px; font-weight: 900; margin-bottom: 16px; }
+  .cta-box p { color: var(--muted); font-size: 15px; line-height: 1.7; margin-bottom: 36px; }
+
+  /* 푸터 */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  footer strong { color: var(--text); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; }
+    .stats { gap: 32px; }
+    .cta-box { padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+
+<nav>
+  <div class="logo">훈킴택스</div>
+  <a href="#cta" class="nav-cta">무료 상담</a>
+</nav>
+
+<section class="hero">
+  <div class="badge">✦ 종합소득세 신고대리 전문</div>
+  <h1>복잡한 종소세,<br><span>전문가에게</span> 맡기세요</h1>
+  <p class="subtitle">개인사업자, 프리랜서, N잡러까지 — 훈킴택스가 빠르고 정확하게 처리해드립니다</p>
+  <div class="cta-group">
+    <a href="#cta" class="btn-primary">지금 신청하기 →</a>
+    <a href="#features" class="btn-secondary">서비스 알아보기</a>
+  </div>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">5,000+</div>
+      <div class="stat-label">신고 완료 건수</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">2일</div>
+      <div class="stat-label">평균 처리 기간</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4.9★</div>
+      <div class="stat-label">고객 만족도</div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="section-label">Why 훈킴택스</div>
+  <h2 class="section-title">이런 분들께 딱 맞습니다</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">💼</div>
+      <div class="feature-title">개인사업자</div>
+      <div class="feature-desc">복잡한 매출·경비 계산부터 신고까지, 세무사가 직접 처리해드립니다.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💻</div>
+      <div class="feature-title">프리랜서</div>
+      <div class="feature-desc">3.3% 원천징수 환급부터 종합소득세 신고까지 한 번에 해결하세요.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <div class="feature-title">N잡러 / 부업러</div>
+      <div class="feature-desc">여러 소득을 합산해 최적의 절세 방법으로 신고해드립니다.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏠</div>
+      <div class="feature-title">임대소득자</div>
+      <div class="feature-desc">주택임대소득 신고부터 절세 전략까지 꼼꼼하게 챙겨드립니다.</div>
+    </div>
+  </div>
+</section>
+
+<section class="process">
+  <div class="section-label">Process</div>
+  <h2 class="section-title">신청부터 완료까지<br>단 3단계</h2>
+  <div class="process-steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">간단 정보 입력</div>
+        <div class="step-desc">소득 유형과 기본 정보만 입력하시면 됩니다. 5분이면 충분해요.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">전문가 검토 & 신고</div>
+        <div class="step-desc">세무사가 직접 검토 후 최적의 방법으로 신고를 진행합니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">신고 완료 확인</div>
+        <div class="step-desc">신고서, 납부서, 접수증을 모두 전달해드립니다. 완전 끝!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="cta">
+  <div class="cta-box">
+    <h2>지금 바로 시작하세요</h2>
+    <p>훈킴택스는 세무법인 플랜비가 운영하는<br>종합소득세 신고대리 전문 서비스입니다.</p>
+    <a href="#" class="btn-primary">무료 상담 신청하기 →</a>
+  </div>
+</section>
+
+<footer>
+  <strong>훈킴택스</strong> · 세무법인 플랜비 운영 · 문의: 카카오톡 채널 @플랜비
+</footer>
+
+</body>
+</html>
